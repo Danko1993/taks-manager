@@ -1,0 +1,10 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: taskmanager
+  profiles:
+    active: ${APP_PROFILE:dev}
+  servlet:
+    context-path: /api

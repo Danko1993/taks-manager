@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    com.example: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  cookie:
+    secure: false
+    same-site: Lax
+  cors:
+    allowed-origins: http://localhost:3000
