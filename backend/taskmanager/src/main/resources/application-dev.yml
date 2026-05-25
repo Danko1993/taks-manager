@@ -7,8 +7,14 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
+    open-in-view: false
   flyway:
     enabled: true
+  config:
+    import: optional:file:.env[.properties]
+  threads:
+    virtual:
+      enabled: true
 
 logging:
   level:
@@ -20,4 +26,11 @@ app:
     secure: false
     same-site: Lax
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: http://localhost:5173  # port Vite, nie 3000
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 86400000
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    from-email: noreply@taskmanager.com
+  frontend-url: http://localhost:5173
