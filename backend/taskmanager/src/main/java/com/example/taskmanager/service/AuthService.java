@@ -8,6 +8,7 @@ import com.example.taskmanager.model.User;
 import com.example.taskmanager.model.VerificationToken;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.repository.VerificationTokenRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +31,7 @@ public class AuthService {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-    // REGISTER
+
     public void register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())){
             throw new EmailAlreadyExistsException(request.email());
@@ -53,7 +54,7 @@ public class AuthService {
         );
     }
 
-    // VERIFY
+    @Transactional
     public void verify(UUID token) {
         VerificationToken verificationToken = verificationTokenRepository
                 .findByToken(token)
@@ -71,7 +72,7 @@ public class AuthService {
         userRepository.save(verificationToken.getUser());
     }
 
-    // LOGIN
+
     public String login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new InvalidCredentialsException());
@@ -87,7 +88,7 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             if (user.getFailedLoginAttempts() >= 5) {
-                user.setLockedUntil(LocalDateTime.now().plusMinutes(30));
+                user.setLockedUntil(LocalDateTime.now().plusMinutes(5));
             }
             userRepository.save(user);
             throw new InvalidCredentialsException();
@@ -100,7 +101,7 @@ public class AuthService {
         return jwtService.generateToken(user.getId(), user.getTokenVersion());
     }
 
-    // LOGOUT ALL DEVICES
+
     public void logoutAllDevices(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow();
